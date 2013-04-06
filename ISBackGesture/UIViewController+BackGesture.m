@@ -1,6 +1,9 @@
 #import "UIViewController+BackGesture.h"
 #import <objc/runtime.h>
 
+#define SWIPE_DISTANCE  100.f
+//#define SWIPE_DISTANCE  150.f
+
 static const char *ISBackGestureEnabledKey    = "ISBackGestureEnabledKey";
 static const char *ISBackGestureProgressKey   = "ISBackGestureProgressKey";
 static const char *ISBackGestureRecognizerKey = "ISBackGestureRecognizerKey";
@@ -123,7 +126,7 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
         return;
     }
     
-    CGFloat progress = translation.x / 150.f;
+    CGFloat progress = translation.x / SWIPE_DISTANCE;
     if (progress < 0.f) {
         progress = 0.f;
     }
@@ -131,6 +134,8 @@ static void ISSwizzleInstanceMethod(Class c, SEL original, SEL alternative)
         progress = 1.f;
     }
     self.backProgress = progress;
+    
+    NSLog(@"progress:%f, translation:%@, backProgress:%f", progress, NSStringFromCGPoint(translation), self.backProgress);
     
     if (self.backProgress >= 1.f) {
         [self.navigationController popViewControllerAnimated:YES];
